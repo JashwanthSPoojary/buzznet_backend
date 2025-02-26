@@ -9,16 +9,18 @@ import http from "http";
 import { initializeWebSocketServer } from "./websocketHandler";
 import { chatbotRouter } from "./routes/chatbotRoute";
 import path from "path";
-
+import { FRONTEND_URL } from "./utils/config";
 
 const app = express();
 const server = http.createServer(app);
 
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 app.use(express.json());
-app.use(cors({
-  origin: "http://localhost:5173"
-}));
+app.use(
+  cors({
+    origin: FRONTEND_URL,
+  })
+);
 app.use(passport.initialize());
 
 app.use("/user", userRouter);

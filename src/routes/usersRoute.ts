@@ -1,18 +1,16 @@
-import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { PrismaClient, Prisma } from "@prisma/client";
 import jwt from "jsonwebtoken";
-import { APP_PASSWORD, EMAIL_USER, FRONTEND_URL, JWT_SECRET } from "../utils/config";
-import passport, { use } from "passport";
+import passport from "passport";
+import nodemailer from 'nodemailer';
+import { Router, Request, Response } from "express";
+import {PrismaClient,Prisma} from "@prisma/client";
+
+import {  EMAIL_USER, FRONTEND_URL, JWT_SECRET, APP_PASSWORD } from "../utils/config";
 import { signinSchema,signupEmailSchema,signupSchema, verifyOtp } from "../middleware/validationSchema";
 import { auth,CustomRequest } from "../middleware/auth";
-import { escape } from "querystring";
-import nodemailer from 'nodemailer';
-
 
 const userRouter = Router();
 const pgClient = new PrismaClient();
-
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -25,7 +23,7 @@ async function sendOTP(email:string, otp:string) {
   const mailOptions = {
     from: EMAIL_USER,
     to: email,
-    subject: 'Verify Your Email',
+    subject: 'Verify Your Email', 
     html: `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2>Email Verification</h2>
@@ -68,11 +66,14 @@ userRouter.post('/verify-otp', async (req, res) => {
       return 
     }
 
-    await pgClient.users.create({
-      data:{
+    await pgClient.users.upsert({
+      where:{
         email:email,
+      },
+      update:{
         email_verified:true
-      }
+      },
+      create:{email,email_verified:true}
     });
     await pgClient.emailVerification.delete({
       where: { email }
@@ -82,6 +83,9 @@ userRouter.post('/verify-otp', async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    res.status(200).json({
+      error:"This service has some inconsistency . We will try to fix asap "
+    });
   }
 })
 
@@ -103,13 +107,16 @@ userRouter.post("/signupemail", async (req, res) => {
 
     const response =await  pgClient.users.findFirst({
       where:{
-        email:email
+        email:email,
+        password_hash:"ddsdsvvvdvfdvdfvdfvdvvbvvdd"        
+      },
+      select:{
+        id:true
       }
-    })
+    });
     console.log(response);
     
     if(response) {
-      console.log(response);
       res.status(202).json({
         error:"user already exists"
       });
@@ -171,6 +178,7 @@ userRouter.post("/signupusername", async (req, res) => {
     console.log(error);
   }
 });
+
 userRouter.post("/checkemail", async (req, res) => {
   const email = req.body.email;
   try {
@@ -229,9 +237,9 @@ userRouter.post("/signup", async (req, res) => {
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002" &&
-      Array.isArray(error.meta?.target) &&
-      error.meta?.target?.includes("username")
+      (error as any).code === "P2002" &&
+      Array.isArray((error as any).meta?.target) &&
+      (error as any).meta?.target?.includes("username")
     ) {
       res.status(409).json({
         error: "User already exists",

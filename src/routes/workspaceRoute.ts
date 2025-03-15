@@ -133,6 +133,12 @@ workspaceRouter.get('/workspaceIds',auth,async (req: CustomRequest, res) => {
           }
         },
       });
+      await pgClient.workspace_members.create({
+        data:{
+          user_id:workspace.owner_id,
+          workspace_id:workspace.id
+        }
+      });
       res.status(200).json({
         message:"workspace id is fetched",
         data:workspace.id
@@ -238,7 +244,7 @@ workspaceRouter.get(
           user: { select: { id: true, username: true, email: true } },
         },
       });
-      const memberdata = members.map((member) => member.user);
+      const memberdata = members.map((member:any) => member.user);
       res.json({
         message: "members fetched",
         data: memberdata,

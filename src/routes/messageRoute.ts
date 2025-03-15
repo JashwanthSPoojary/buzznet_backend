@@ -29,7 +29,6 @@ const upload = multer({
   },
   limits: { fileSize: 5 * 1024 * 1024 },
 });
-
 const pgClient = new PrismaClient();
 export const messageRouter = Router();
 

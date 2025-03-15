@@ -1,15 +1,17 @@
 import express from "express";
-import { userRouter } from "./routes/usersRoute";
-import { APP_PASSWORD, EMAIL_USER, PORT } from "./utils/config";
 import passport from "passport";
 import cors from "cors";
-import "./utils/passport";
-import { workspaceRouter } from "./routes/workspaceRoute";
 import http from "http";
-import { initializeWebSocketServer } from "./websocketHandler";
-import { chatbotRouter } from "./routes/chatbotRoute";
 import path from "path";
+
+import { userRouter } from "./routes/usersRoute";
+import { workspaceRouter } from "./routes/workspaceRoute";
+import { chatbotRouter } from "./routes/chatbotRoute";
+
+import { PORT } from "./utils/config";
+import "./utils/passport";
 import { FRONTEND_URL } from "./utils/config";
+import { initializeWebSocketServer } from "./websocketHandler";
 
 const app = express();
 const server = http.createServer(app);

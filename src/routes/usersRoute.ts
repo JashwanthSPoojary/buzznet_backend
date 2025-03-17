@@ -16,7 +16,9 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: EMAIL_USER,
     pass: APP_PASSWORD  // Gmail App Password
-  }
+  },
+  debug: true, // Enable debugging output
+  logger: true
 });
 
 async function sendOTP(email:string, otp:string) {

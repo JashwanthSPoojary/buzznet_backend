@@ -1,21 +1,23 @@
-  name: CI/CD Pipeline
+name: CI/CD Pipeline
 
-  on:
-    push:
-      branches:
-        - main
-  jobs:
-    build-and-deploy:
-      runs-on: ubuntu-latest
-  steps:
-  - name: Deploy to VM
-          uses: appleboy/ssh-action@master
-          with:
-            host: ${{ secrets.VM_IP }}
-            username: root  # Adjust based on your VM's username
-            key: ${{ secrets.SSH_PRIVATE_KEY }}
-            script: |
-              cd /root/buzznet_backend  # Adjust to your app's directory on the VM
-              git pull origin main
-              npm install
-              pm2 restart buzznet_backend  # Ensure PM2 is managing your app
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: root  # Adjust based on your VM's username
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/buzznet_backend  # Adjust to your app's directory on the VM
+            git pull origin main
+            npm install
+            pm2 restart buzznet_backend  # Ensure PM2 is managing your app

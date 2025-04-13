@@ -1,2 +1,2 @@
-what to do for local development and production ?
-stopped checking in user route
+Buzznet backend drepo :
+uses node js  , express js , postgres sql , prisma , websocket , webrtc , passport js

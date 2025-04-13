@@ -105,6 +105,25 @@ channelRouter.delete('/:workspaceId/channel/:channelId',auth, async (req: Custom
     res.status(500).json({ error: "Failed to delete channel" });
   }
 })
+channelRouter.get('/:workspaceId/channel/channelIds',auth,async (req: CustomRequest, res) => {
+  const workspaceId = parseInt(req.params.workspaceId);
+  try {
+    const response = await pgClient.channels.findFirst({
+      where:{
+        workspace_id:workspaceId
+      },
+      select:{
+        id:true
+      },
+      take:1
+    });
+    res.status(200).json({ message: "ChannelId fetched" , id:response?.id });
+  } catch (error) {
+    console.error("Error deleting channel:", error);
+    res.status(500).json({ error: "Failed to fetch channelId" });
+  }
+
+})
 channelRouter.put('/:workspaceId/channel/:channelId',auth, async (req: CustomRequest, res) => {
   const channelId = parseInt(req.params.channelId);
   const workspaceId = parseInt(req.params.workspaceId);

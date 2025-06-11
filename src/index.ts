@@ -20,8 +20,8 @@ app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 app.use(express.json());
 app.use(
   cors({
-    origin: [ FRONTEND_URL, 'https://www.buzznet.me' ]
-  })
+  origin: [FRONTEND_URL as string, 'https://www.buzznet.me'],
+})
 );
 app.use(passport.initialize());
 
